@@ -1,0 +1,22 @@
+{
+  "name": "watchparty",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Real-time watch-party backend: synchronized playback, chat, playlists, polls, movie discovery",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "bench:latency": "node bench/latency.js",
+    "bench:drift": "node bench/drift.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  }
+}
