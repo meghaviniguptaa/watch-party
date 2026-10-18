@@ -23,6 +23,16 @@ export class Playlist {
     return item;
   }
 
+  // Items still to be played: the current one and everything after it.
+  upcoming() {
+    const idx = this.items.findIndex((i) => i.id === this.currentId);
+    return idx < 0 ? this.items : this.items.slice(idx);
+  }
+
+  findDuplicate({ movieId, url }) {
+    return this.upcoming().find((i) => (movieId ? i.movieId === movieId : Boolean(url) && i.url === url)) ?? null;
+  }
+
   remove(id) {
     const index = this.items.findIndex((i) => i.id === id);
     if (index < 0) throw notFound();
