@@ -236,6 +236,15 @@ export class Room {
 
   playlistAdd(p, data, playNow = false) {
     if (playNow) this.#authorize(p);
+    const dup = this.playlist.findDuplicate(data);
+    if (dup) {
+      const isCurrent = dup.id === this.playlist.currentId;
+      if (playNow && !isCurrent) {
+        this.#playItem(dup); // already queued: jump to it instead of adding a copy
+        return dup;
+      }
+      throw new AppError('duplicate', isCurrent ? 'That’s already playing' : 'That’s already in the queue', 409);
+    }
     const item = this.playlist.add(data, p.id);
     if (playNow) this.#playItem(item);
     else this.#broadcastPlaylist();
