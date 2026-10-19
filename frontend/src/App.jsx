@@ -45,7 +45,7 @@ function Home({ go }) {
     <main className="home">
       <div className="beam" aria-hidden="true" />
       <section className="pitch">
-        <h1>Press play, together.</h1>
+        <h1>Press play, <em>together.</em></h1>
         <p>Spin up a room, send the link, and everyone’s screen stays on the same frame. Chat, queue, vote on what’s next.</p>
       </section>
 
