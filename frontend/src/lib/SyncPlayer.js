@@ -14,6 +14,8 @@ export class SyncPlayer {
   reset() { this.sim = new SimulatedPlayer(); }
   #block(v) { if (this.blocked !== v) { this.blocked = v; this.onBlockedChange(v); } }
 
+  // True while a seek is still loading. Correcting drift during that window just restarts the download.
+  isSeeking() { return Boolean(this.video && this.video.seeking); }
   getPosition() { return this.video ? this.video.currentTime : this.sim.getPosition(); }
   isPlaying() { return this.video ? !this.video.paused && !this.video.ended : this.sim.isPlaying(); }
 

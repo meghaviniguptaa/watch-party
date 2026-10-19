@@ -65,7 +65,7 @@ export function Queue({ room, canControl }) {
 }
 
 /* ---------------- Browse ---------------- */
-function Row({ m, add, canControl }) {
+function Row({ m, add, canControl, queued, playing }) {
   return (
     <li>
       <div className="meta">
@@ -77,8 +77,8 @@ function Row({ m, add, canControl }) {
         </small>
       </div>
       <div className="btns">
-        <button className="ghost" onClick={() => add(m, false)}>Queue</button>
-        <button className="ghost" disabled={!canControl} onClick={() => add(m, true)}>Play now</button>
+        <button className="ghost" disabled={queued} onClick={() => add(m, false)}>{playing ? 'Playing' : queued ? 'In queue' : 'Queue'}</button>
+        <button className="ghost" disabled={!canControl || playing} onClick={() => add(m, true)}>Play now</button>
       </div>
     </li>
   );
@@ -107,6 +107,10 @@ export function Browse({ room, canControl, currentMovieId }) {
     api.similar(currentMovieId).then((r) => setSimilar(r.items)).catch(() => setSimilar([]));
   }, [currentMovieId]);
 
+  const { items, currentId } = client.playlist;
+  const idx = items.findIndex((i) => i.id === currentId);
+  const upcoming = idx < 0 ? items : items.slice(idx);
+  const queuedIds = new Set(upcoming.map((i) => i.movieId).filter(Boolean));
   const add = (m, playNow) => act(client.playlistAdd({ movieId: m.id, playNow }));
   const addLink = (e) => {
     e.preventDefault();
@@ -132,13 +136,13 @@ export function Browse({ room, canControl, currentMovieId }) {
       {similar.length > 0 && !q && !shelf && !genre && (
         <>
           <h3>Because you’re watching this</h3>
-          <ul className="list">{similar.slice(0, 4).map((m) => <Row key={m.id} m={m} add={add} canControl={canControl} />)}</ul>
+          <ul className="list">{similar.slice(0, 4).map((m) => <Row key={m.id} m={m} add={add} canControl={canControl} queued={queuedIds.has(m.id)} playing={m.id === currentMovieId} />)}</ul>
         </>
       )}
 
       <h3>{res.total} {res.total === 1 ? 'title' : 'titles'}</h3>
       {err && <p className="error">{err}</p>}
-      <ul className="list">{res.items.map((m) => <Row key={m.id} m={m} add={add} canControl={canControl} />)}</ul>
+      <ul className="list">{res.items.map((m) => <Row key={m.id} m={m} add={add} canControl={canControl} queued={queuedIds.has(m.id)} playing={m.id === currentMovieId} />)}</ul>
 
       <h3>Or bring your own link</h3>
       <form onSubmit={addLink} className="stack">

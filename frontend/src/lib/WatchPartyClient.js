@@ -241,6 +241,7 @@ export class WatchPartyClient {
       if (state.playing) player.play();
       else player.pause();
     }
+    if (!forceSeek && player.isSeeking?.()) return; // let an in-flight seek finish instead of restarting it
     const expected = positionAt(state, this.serverNow());
     const driftMs = (player.getPosition() - expected) * 1000;
 
